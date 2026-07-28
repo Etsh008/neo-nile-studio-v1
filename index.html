@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neo Nile Studio V1</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">NN</div>
+      <div>
+        <strong>Neo Nile Studio</strong>
+        <small>AI Record Producer · V1</small>
+      </div>
+    </div>
+    <div id="engineBadge" class="badge warning">ENGINE STARTING</div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">PROMPT → MUSIC → MASTER → WAV</p>
+      <h1>Describe it once.<br><span>Release it complete.</span></h1>
+      <p class="lead">
+        One private studio running on a dedicated GPU Pod. No Serverless cold starts,
+        no external UI service, and no browser request waiting for the full generation.
+      </p>
+    </section>
+
+    <nav class="tabs">
+      <button class="tab active" data-target="producer">Auto Producer</button>
+      <button class="tab" data-target="library">Library</button>
+      <button class="tab" data-target="diagnostics">Diagnostics</button>
+    </nav>
+
+    <section id="producer" class="panel active-panel">
+      <div class="grid two">
+        <article class="card">
+          <div class="section-title">
+            <div>
+              <p class="micro">STEP 1</p>
+              <h2>Create a project</h2>
+            </div>
+          </div>
+          <div class="field-row">
+            <label>Project
+              <select id="projectSelect"></select>
+            </label>
+            <button id="newProjectBtn" class="button secondary">New Project</button>
+          </div>
+          <div id="projectHint" class="hint">Create your first project to begin.</div>
+        </article>
+
+        <article class="card">
+          <p class="micro">ENGINE</p>
+          <h2 id="engineTitle">Starting ACE-Step…</h2>
+          <p id="engineMessage" class="muted">The web studio is ready while the GPU model loads in the background.</p>
+          <button id="retryEngineBtn" class="button ghost">Retry Engine</button>
+        </article>
+      </div>
+
+      <article class="card composer">
+        <p class="micro">STEP 2 · MUSIC DIRECTION</p>
+        <textarea id="prompt" rows="9" placeholder="Example: A completely original cinematic Egyptian-Mediterranean instrumental, expressive ney, warm acoustic guitar, organic percussion, deep controlled bass, mysterious Alexandria night atmosphere and a memorable uplifting ending."></textarea>
+
+        <div class="controls">
+          <label>Title
+            <input id="title" type="text" value="Alexandria After Midnight">
+          </label>
+          <label>Duration
+            <select id="duration">
+              <option value="30">30 sec · test</option>
+              <option value="60">60 sec</option>
+              <option value="120">2 min</option>
+              <option value="180">3 min</option>
+              <option value="240">4 min</option>
+            </select>
+          </label>
+          <label>BPM
+            <input id="bpm" type="number" min="30" max="300" value="104">
+          </label>
+          <label>Key
+            <select id="keyScale">
+              <option value="">Auto</option>
+              <option>D Minor</option>
+              <option>A Minor</option>
+              <option>C Minor</option>
+              <option>D Major</option>
+              <option>A Major</option>
+            </select>
+          </label>
+          <label>Versions
+            <select id="variations">
+              <option value="1">1 · recommended test</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </label>
+          <label class="check">
+            <input id="autoMaster" type="checkbox" checked>
+            Auto Master
+          </label>
+        </div>
+
+        <div class="action-row">
+          <button id="generateBtn" class="button primary">Create Complete Track</button>
+          <p class="muted">The request returns immediately. You can watch the production job without browser timeouts.</p>
+        </div>
+      </article>
+
+      <article id="jobCard" class="card hidden">
+        <div class="section-title">
+          <div>
+            <p class="micro">PRODUCTION JOB</p>
+            <h2 id="jobTitle">Preparing…</h2>
+          </div>
+          <div id="jobStatus" class="badge warning">QUEUED</div>
+        </div>
+        <div class="progress-shell"><div id="progressBar" class="progress-bar"></div></div>
+        <p id="jobMessage" class="muted"></p>
+        <div id="jobError" class="error hidden"></div>
+        <div id="results"></div>
+      </article>
+    </section>
+
+    <section id="library" class="panel">
+      <article class="card">
+        <div class="section-title">
+          <div>
+            <p class="micro">PROJECT HISTORY</p>
+            <h2>Record Library</h2>
+          </div>
+          <button id="refreshLibraryBtn" class="button secondary">Refresh</button>
+        </div>
+        <div id="libraryContent" class="list"></div>
+      </article>
+    </section>
+
+    <section id="diagnostics" class="panel">
+      <div class="grid two">
+        <article class="card">
+          <p class="micro">SYSTEM TEST</p>
+          <h2>Diagnostics</h2>
+          <button id="runDiagnosticsBtn" class="button primary">Run Diagnostics</button>
+          <pre id="diagnosticsOutput">Press the button to inspect GPU, storage, API and model state.</pre>
+        </article>
+        <article class="card">
+          <p class="micro">ENGINE LOG</p>
+          <h2>Latest Logs</h2>
+          <button id="loadLogsBtn" class="button secondary">Load Logs</button>
+          <pre id="logsOutput">Logs stay inside the private studio.</pre>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="projectDialog">
+    <form method="dialog" class="dialog-card">
+      <h2>New Project</h2>
+      <label>Name
+        <input id="newProjectName" value="First Neo Nile Project" maxlength="100">
+      </label>
+      <label>Notes
+        <textarea id="newProjectNotes" rows="4" placeholder="Creative direction or album notes"></textarea>
+      </label>
+      <div class="action-row">
+        <button value="cancel" class="button secondary">Cancel</button>
+        <button id="createProjectBtn" value="default" class="button primary">Create Project</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="/app.js"></script>
+</body>
+</html>
